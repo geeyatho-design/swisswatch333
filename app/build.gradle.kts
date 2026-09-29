@@ -10,4 +10,14 @@ android {
         versionCode = 3
         versionName = "1.0.2"
     }
+    buildTypes {
+        debug {
+            isMinifyEnabled = true
+            isShrinkResources = false
+        }
+        release {
+            isMinifyEnabled = true
+            isShrinkResources = false
+        }
+    }
 }

@@ -35,6 +35,7 @@ jobs:
           set -euo pipefail
           mkdir -p dist
           cp app/build/outputs/apk/debug/app-debug.apk dist/rail-dial-1.0.2.apk
+          python3 -c 'from zipfile import ZipFile; z=ZipFile("dist/rail-dial-1.0.2.apk"); assert not any(p.endswith(".dex") for p in z.namelist()), "WFF must contain resources only"'
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs dist/rail-dial-1.0.2.apk > dist/signature-check.txt
           "$ANDROID_HOME/build-tools/35.0.0/aapt2" dump badging dist/rail-dial-1.0.2.apk > dist/package-info.txt
           sha256sum dist/rail-dial-1.0.2.apk > dist/SHA256SUMS.txt
