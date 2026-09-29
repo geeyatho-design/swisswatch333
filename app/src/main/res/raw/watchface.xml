@@ -1,0 +1,10 @@
+<WatchFace width="450" height="450">
+  <Scene>
+    <PartImage x="0" y="0" width="450" height="450"><Image resource="dial" /></PartImage>
+    <AnalogClock x="0" y="0" width="450" height="450">
+      <HourHand resource="hour" x="212" y="105" width="26" height="133" pivotX="0.5" pivotY="0.9022556" />
+      <MinuteHand resource="minute" x="215" y="55" width="20" height="187" pivotX="0.5" pivotY="0.9090909" />
+      <SecondHand resource="second" x="208" y="34" width="34" height="236" pivotX="0.5" pivotY="0.8093220" />
+    </AnalogClock>
+  </Scene>
+</WatchFace>
