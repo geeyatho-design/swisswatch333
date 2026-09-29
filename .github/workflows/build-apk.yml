@@ -1,0 +1,42 @@
+name: Build Wear OS APK
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: watchface-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - name: Install Android build tools
+        run: sdkmanager 'platforms;android-36' 'build-tools;35.0.0'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.11.1'
+      - name: Build APK
+        run: gradle --no-daemon :app:assembleDebug
+      - name: Verify signed APK and package metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          cp app/build/outputs/apk/debug/app-debug.apk dist/rail-dial-1.0.2.apk
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs dist/rail-dial-1.0.2.apk > dist/signature-check.txt
+          "$ANDROID_HOME/build-tools/35.0.0/aapt2" dump badging dist/rail-dial-1.0.2.apk > dist/package-info.txt
+          sha256sum dist/rail-dial-1.0.2.apk > dist/SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rail-dial-1.0.2-apk
+          path: dist/
+          if-no-files-found: error
