@@ -1,0 +1,51 @@
+name: Build Rail Dial AOD APK
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'aod/**'
+      - 'settings.gradle.kts'
+      - 'build.gradle.kts'
+      - '.github/workflows/build-aod-apk.yml'
+permissions:
+  contents: read
+concurrency:
+  group: watchface-aod-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
+          log-accepted-android-sdk-licenses: false
+      - name: Install Android build tools
+        run: sdkmanager 'platforms;android-36' 'build-tools;35.0.0'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.11.1'
+      - name: Build APK
+        run: gradle --no-daemon :aod:assembleDebug
+      - name: Verify signed APK and package metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          cp aod/build/outputs/apk/debug/aod-debug.apk dist/rail-dial-aod-1.0.0.apk
+          python3 -c 'from zipfile import ZipFile; z=ZipFile("dist/rail-dial-aod-1.0.0.apk"); assert not any(p.endswith(".dex") for p in z.namelist()), "WFF must contain resources only"'
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs dist/rail-dial-aod-1.0.0.apk > dist/signature-check.txt
+          "$ANDROID_HOME/build-tools/35.0.0/aapt2" dump badging dist/rail-dial-aod-1.0.0.apk > dist/package-info.txt
+          sha256sum dist/rail-dial-aod-1.0.0.apk > dist/SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rail-dial-aod-1.0.0-apk
+          path: dist/
+          if-no-files-found: error
