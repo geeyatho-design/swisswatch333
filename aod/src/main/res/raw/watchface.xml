@@ -1,9 +1,15 @@
 <WatchFace width="450" height="450">
-  <Scene>
+  <Metadata key="CLOCK_TYPE" value="ANALOG" />
+  <Scene backgroundColor="#000000">
     <PartImage x="0" y="0" width="450" height="450"><Image resource="dial_ambient" /></PartImage>
-    <AnalogClock x="0" y="0" width="450" height="450">
-      <HourHand resource="hour_ambient" x="212" y="105" width="26" height="133" pivotX="0.5" pivotY="0.9022556" />
-      <MinuteHand resource="minute_ambient" x="215" y="55" width="20" height="187" pivotX="0.5" pivotY="0.9090909" />
-    </AnalogClock>
+    <!-- No seconds, animation, or sensor sources in either display mode. -->
+    <PartImage x="220" y="105" width="10" height="133" pivotX="0.5" pivotY="0.902255639">
+      <Transform target="angle" value="[HOUR_0_11] * 30 + [MINUTE] * 0.5" />
+      <Image resource="hour_ambient_compact" />
+    </PartImage>
+    <PartImage x="220" y="55" width="10" height="187" pivotX="0.5" pivotY="0.909090909">
+      <Transform target="angle" value="[MINUTE] * 6" />
+      <Image resource="minute_ambient_compact" />
+    </PartImage>
   </Scene>
 </WatchFace>

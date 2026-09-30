@@ -1,5 +1,5 @@
 <WatchFaceInfo>
   <Preview value="@drawable/preview" />
   <Category value="CATEGORY_EMPTY" />
-  <Editable value="false" />
+  <Editable value="true" />
 </WatchFaceInfo>

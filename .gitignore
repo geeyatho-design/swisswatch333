@@ -6,3 +6,10 @@ local.properties
 *.keystore
 *.apk
 __pycache__/
+
+# Never publish private signing material.
+*.jks
+*.keystore
+*.p12
+*password*
+review/

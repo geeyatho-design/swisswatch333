@@ -28,19 +28,19 @@ jobs:
         with:
           gradle-version: '8.11.1'
       - name: Build APK
-        run: gradle --no-daemon :app:assembleDebug
-      - name: Verify signed APK and package metadata
+        run: gradle --no-daemon :app:assembleRelease
+      - name: Verify resource-only APK and package metadata
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p dist
-          cp app/build/outputs/apk/debug/app-debug.apk dist/rail-dial-1.0.2.apk
-          python3 -c 'from zipfile import ZipFile; z=ZipFile("dist/rail-dial-1.0.2.apk"); assert not any(p.endswith(".dex") for p in z.namelist()), "WFF must contain resources only"'
-          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs dist/rail-dial-1.0.2.apk > dist/signature-check.txt
-          "$ANDROID_HOME/build-tools/35.0.0/aapt2" dump badging dist/rail-dial-1.0.2.apk > dist/package-info.txt
-          sha256sum dist/rail-dial-1.0.2.apk > dist/SHA256SUMS.txt
+          cp app/build/outputs/apk/release/app-release-unsigned.apk dist/rail-dial-1.1.0-unsigned.apk
+          python3 -c 'from zipfile import ZipFile; z=ZipFile("dist/rail-dial-1.1.0-unsigned.apk"); assert not any(p.endswith(".dex") for p in z.namelist()), "WFF must contain resources only"'
+          "$ANDROID_HOME/build-tools/35.0.0/aapt2" dump badging dist/rail-dial-1.1.0-unsigned.apk > dist/package-info.txt
+          cp "$ANDROID_HOME/build-tools/35.0.0/lib/apksigner.jar" dist/apksigner.jar
+          sha256sum dist/rail-dial-1.1.0-unsigned.apk > dist/SHA256SUMS.txt
       - uses: actions/upload-artifact@v4
         with:
-          name: rail-dial-1.0.2-apk
+          name: rail-dial-1.1.0-unsigned-build
           path: dist/
           if-no-files-found: error
